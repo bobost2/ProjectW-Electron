@@ -1,0 +1,46 @@
+.AddUserComponent {
+    background-color: #00000033;
+    box-shadow: black 0px 0px 4px 1px;
+    margin-right: 0.5rem;
+    margin-left: 0.5rem;
+    margin-bottom: 1rem;
+    display: inline-flex;
+    width: 17rem;
+    height: 5rem;
+    justify-content: space-between;
+}
+
+.AddUserComponent:hover {
+    cursor: pointer;
+    background-color: #24242433;
+}
+
+.AddUserComponent:active {
+    cursor: pointer;
+    background-color: #36363633;
+}
+
+.profileBox{
+    width: 4rem;
+    height: 4rem;
+    box-shadow: black 0px 0px 4px 1px;
+    align-self: center;
+    background-color: #b5b5b554;
+    margin-left: 0.5rem;
+    display: flex;
+    justify-content: center;
+
+    &_plusSign{
+        align-self: center;
+        text-shadow: 0 0 5px white;
+        color: white;
+        font-size: 3rem;
+    }
+}
+
+.TextUser{
+    align-self: center;
+    font-size: 1.5rem;
+    margin: auto;
+    text-shadow: 0 0 3px white;
+}
