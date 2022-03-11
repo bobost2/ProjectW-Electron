@@ -12,7 +12,7 @@ const WindowComponent: FC<WindowComponentProps> = (props) => (
     <div className={styles.WindowComponent_title}>
       <div style={{marginLeft: '0.5rem'}}>{props.title}</div>
     </div>
-    <div className={styles.WindowComponent_contents} style={{padding: props.padding}}>
+    <div className={styles.WindowComponent_contents} style={{padding: props.padding,  overflowY: 'auto'}}>
       {props.children}
     </div>
   </div>

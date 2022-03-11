@@ -9,13 +9,59 @@ interface MainPageProps {}
 const MainPage: FC<MainPageProps> = () => {
   
   const [tempUsers, setTempUsers] = useState([{}]);
+  const [animFadeAway, setAnimationFadeAway] = useState(false);
 
   function AddUser(){
-
+    setAnimationFadeAway(true);
+    setTimeout(() => {
+      setAnimationFadeAway(false);
+    }, 2000)
   }
 
   useEffect(() => {
     var tempArray = [];
+    tempArray.push({"avatar": null, "username": "user1"});
+    tempArray.push({"avatar": "#AVATAR#", "username": "user2"});
+    tempArray.push({"avatar": null, "username": "user3"});
+    tempArray.push({"avatar": null, "username": "user4"});
+    tempArray.push({"avatar": "#AVATAR#", "username": "user5"});
+    tempArray.push({"avatar": null, "username": "user6"});
+    tempArray.push({"avatar": null, "username": "user1"});
+    tempArray.push({"avatar": "#AVATAR#", "username": "user2"});
+    tempArray.push({"avatar": null, "username": "user3"});
+    tempArray.push({"avatar": null, "username": "user4"});
+    tempArray.push({"avatar": "#AVATAR#", "username": "user5"});
+    tempArray.push({"avatar": null, "username": "user6"});
+    tempArray.push({"avatar": null, "username": "user1"});
+    tempArray.push({"avatar": "#AVATAR#", "username": "user2"});
+    tempArray.push({"avatar": null, "username": "user3"});
+    tempArray.push({"avatar": null, "username": "user4"});
+    tempArray.push({"avatar": "#AVATAR#", "username": "user5"});
+    tempArray.push({"avatar": null, "username": "user6"});
+    tempArray.push({"avatar": null, "username": "user1"});
+    tempArray.push({"avatar": "#AVATAR#", "username": "user2"});
+    tempArray.push({"avatar": null, "username": "user3"});
+    tempArray.push({"avatar": null, "username": "user4"});
+    tempArray.push({"avatar": "#AVATAR#", "username": "user5"});
+    tempArray.push({"avatar": null, "username": "user6"});
+    tempArray.push({"avatar": null, "username": "user1"});
+    tempArray.push({"avatar": "#AVATAR#", "username": "user2"});
+    tempArray.push({"avatar": null, "username": "user3"});
+    tempArray.push({"avatar": null, "username": "user4"});
+    tempArray.push({"avatar": "#AVATAR#", "username": "user5"});
+    tempArray.push({"avatar": null, "username": "user6"});
+    tempArray.push({"avatar": null, "username": "user1"});
+    tempArray.push({"avatar": "#AVATAR#", "username": "user2"});
+    tempArray.push({"avatar": null, "username": "user3"});
+    tempArray.push({"avatar": null, "username": "user4"});
+    tempArray.push({"avatar": "#AVATAR#", "username": "user5"});
+    tempArray.push({"avatar": null, "username": "user6"});
+    tempArray.push({"avatar": null, "username": "user1"});
+    tempArray.push({"avatar": "#AVATAR#", "username": "user2"});
+    tempArray.push({"avatar": null, "username": "user3"});
+    tempArray.push({"avatar": null, "username": "user4"});
+    tempArray.push({"avatar": "#AVATAR#", "username": "user5"});
+    tempArray.push({"avatar": null, "username": "user6"});
     tempArray.push({"avatar": null, "username": "user1"});
     tempArray.push({"avatar": "#AVATAR#", "username": "user2"});
     tempArray.push({"avatar": null, "username": "user3"});
@@ -30,7 +76,7 @@ const MainPage: FC<MainPageProps> = () => {
   return(
     <div className={styles.MainPage}>
       <WindowComponent title={"Select user:"} height={"35rem"} padding={"3rem"}>
-        <div>
+        <div style={{maxHeight: '26.2rem'}} className={animFadeAway ? styles.InsideWindowFade : styles.InsideWindow }>
           <span onClick={AddUser}>
             <AddUserComponent/>
           </span>
