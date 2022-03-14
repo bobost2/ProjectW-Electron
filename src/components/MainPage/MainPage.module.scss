@@ -2,25 +2,23 @@
 
 
 .InsideWindow{
-    
+    animation-duration: 0.5s;
+    animation-name: FadeInWin;
 }
 
 .InsideWindowFade{
-    animation-play-state: running;
-    animation-duration: 2s;
+    animation-duration: 0.5s;
     animation-name: FadeAwayWin;
 }
 
 @keyframes FadeAwayWin {
-    from {
-        opacity: 100%;
-        margin-left: 0rem;
-    }
+    from { opacity: 100%; }
+    to { opacity: 0%; }
+}
 
-    to {
-        opacity: 0%;
-        margin-left: 80rem;
-    }
+@keyframes FadeInWin {
+  from { opacity: 0%; }
+  to { opacity: 100%; }
 }
 
 
