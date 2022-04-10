@@ -1,0 +1,17 @@
+.AddUser {
+    display: flex;
+    flex-direction: column;
+    height: 26.2rem;
+    justify-content: space-between;
+}
+
+.ButtonSection {
+    display: flex;
+    justify-content: space-between;
+}
+
+.HelperText{
+    align-self: center;
+    font-size: 1.5rem;
+    margin-right: 2rem;
+}
