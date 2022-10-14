@@ -1,3 +1,4 @@
+
 import { createTheme, ThemeProvider } from '@mui/material';
 import MainPage from 'components/MainPage/MainPage';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';

@@ -3,6 +3,7 @@ import styles from './MainPage.module.scss';
 import SelectUser from './SelectUser/SelectUser';
 import AddUserComponent from './AddUser/AddUser';
 import { FC, useState } from 'react';
+import SerialPortComponent from 'components/SerialPortComponent/SerialPortComponent';
 
 interface MainPageProps {}
 
@@ -32,6 +33,7 @@ const MainPage: FC<MainPageProps> = () => {
 
   return(
     <div className={styles.MainPage}>
+      <div><SerialPortComponent/></div>
       <WindowComponent title={windowTitle} height={"33rem"} padding={"2rem"}>
         <div style={{maxHeight: '26.2rem'}} className={animFadeAway ? styles.InsideWindowFade : styles.InsideWindow }>
           {isInUserCreation ?

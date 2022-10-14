@@ -14,6 +14,7 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import { SerialPort } from 'serialport'
 
 export default class AppUpdater {
   constructor() {
@@ -22,6 +23,32 @@ export default class AppUpdater {
     autoUpdater.checkForUpdatesAndNotify();
   }
 }
+
+// async function lockPort(){
+  // await SerialPort.list().then((ports) => {
+  //   console.log('ports', ports);
+  //   ports.forEach(port => {
+  //     if(port.manufacturer === 'Electronic Team')
+  //     {
+  //       const portR = new SerialPort({
+  //         path: port.pnpId + "",
+  //         baudRate: 9600,
+  //         autoOpen: false,
+  //       })
+  //       portR.on('data', function() {
+  //         console.log('Data:', portR.read());
+  //         localStorage.setItem("SerialData", portR.read());
+  //       })
+  //       // while(true) {
+  //       //   console.log(port.pnpId);
+  //       //   localStorage.setItem('data', "xxx");
+  //       // }
+  //     }
+  //   });   
+  // })
+// }
+
+
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -56,6 +83,17 @@ const installExtensions = async () => {
     .catch(console.log);
 };
 
+ipcMain.handle('serialPortLibrary', async () => {
+  return SerialPort;
+})
+
+ipcMain.on('msg', (event,data) => {
+  console.log(data);
+  SerialPort.list().then((ports) => {
+    event.reply("reply", ports);  
+  })  
+});
+
 const createWindow = async () => {
   if (isDevelopment) {
     await installExtensions();
@@ -75,7 +113,8 @@ const createWindow = async () => {
     height: 800,
     icon: getAssetPath('icon.png'),
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: true,
+      contextIsolation: false,
     },
   });
 
@@ -108,6 +147,8 @@ const createWindow = async () => {
   // Remove this if your app does not use auto updates
   // eslint-disable-next-line
   new AppUpdater();
+
+  //lockPort();
 };
 
 /**
