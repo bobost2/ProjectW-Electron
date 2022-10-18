@@ -2,15 +2,19 @@
  * @NOTE: Prepend a `~` to css file paths that are in your node_modules
  *        See https://github.com/webpack-contrib/sass-loader#imports
  */
+
 body {
-  position: relative;
-  color: white;
-  height: 100vh;
   background: linear-gradient(
     200.96deg,
     #2a7dfe -29.09%,
     #8043e1 51.77%
   );
+}
+
+ .MainBody {
+  position: relative;
+  color: white;
+  height: 97.9vh; 
   font-family: sans-serif;
   overflow-y: hidden;
   display: flex;

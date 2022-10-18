@@ -3,24 +3,35 @@ import styles from './SerialPortComponent.module.scss';
 import {ipcRenderer} from 'electron';
 interface SerialPortComponentProps {}
 
+interface SerialPortI{
+  friendlyName: string;
+  locationId: string;
+  manufacturer: string;
+  path: string;
+  pnpId: string;
+  productId: string;
+  serialNumber: string;
+  vendorId: string;
+}
+
 const SerialPortComponent: FC<SerialPortComponentProps> = () => 
 {
-  const getSerialLibrary = async (): Promise<any> => {
-    // async () => {
-    //   //const result = await ipcRenderer.invoke('serialPortLibrary');
-    //   const result = window.Electron.ipcRenderer.invoke('serialPortLibrary');
-    //   console.log(result);
-    //   // ...
-    // }
-    ipcRenderer.send("msg", "bruh");
-    ipcRenderer.on("reply", (event, data) => {
-      console.log(data);
+
+  const getSerialPorts = async (): Promise<any> => {
+    ipcRenderer.send("requestPorts");
+    ipcRenderer.on("returnPorts", (event, data) => {
+      var ports:SerialPortI[] = data;
+      console.log(ports);
     });
   }
+
+  useEffect(() => {
+    getSerialPorts();
+  }, []);
   
   return(
     <div className={styles.SerialPortComponent}>
-      <button onClick={getSerialLibrary}>Press for disappoitment!</button>
+
     </div> 
   );
 }
