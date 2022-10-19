@@ -29,6 +29,8 @@ const configuration: webpack.Configuration = {
 
   target: 'electron-main',
 
+  externals: ['serialport'],
+
   entry: {
     main: path.join(webpackPaths.srcMainPath, 'main.ts'),
   },
