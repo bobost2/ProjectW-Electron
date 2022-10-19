@@ -1,7 +1,9 @@
 import React, { FC, useEffect } from 'react';
 import styles from './SerialPortComponent.module.scss';
 import {ipcRenderer} from 'electron';
-interface SerialPortComponentProps {}
+interface SerialPortComponentProps {
+  setPortStatus: any;
+}
 
 interface SerialPortI{
   friendlyName: string;
@@ -14,14 +16,15 @@ interface SerialPortI{
   vendorId: string;
 }
 
-const SerialPortComponent: FC<SerialPortComponentProps> = () => 
+const SerialPortComponent: FC<SerialPortComponentProps> = (props) => 
 {
 
   const getSerialPorts = async (): Promise<any> => {
     ipcRenderer.send("requestPorts");
-    ipcRenderer.on("returnPorts", (event, data) => {
-      var ports:SerialPortI[] = data;
-      console.log(ports);
+    ipcRenderer.on("returnPort", (event, data) => {
+      var port:SerialPortI = data;
+      props.setPortStatus(true);
+      console.log(port);
     });
   }
 

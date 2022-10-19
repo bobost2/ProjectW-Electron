@@ -4,13 +4,14 @@ import styles from './SystemBar.module.scss';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import CableIcon from '@mui/icons-material/Cable';
 import {ipcRenderer} from 'electron';
+import SerialPortComponent from 'components/SerialPortComponent/SerialPortComponent';
 
 interface SystemBarProps {}
 
 const SystemBar: FC<SystemBarProps> = () => {
 
   const [currentTime, setCurrentTime] = useState("HH:MM");
-
+  const [portStatus, setPortStatus] = useState(false);
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -49,8 +50,9 @@ const SystemBar: FC<SystemBarProps> = () => {
   
   return (
     <div className={styles.SystemBar}>
+      <SerialPortComponent setPortStatus={setPortStatus}/>
       <div className={styles.InsideBar}>
-        <CableIcon color="warning" style={{marginLeft: '15px'}}/>
+        <CableIcon color={portStatus ? "success" : "error"} style={{marginLeft: '15px'}}/>
         <div className={styles.Clock}>
           {currentTime}
         </div>

@@ -61,11 +61,40 @@ const installExtensions = async () => {
 };
 
 
-ipcMain.on('requestPorts', (event,data) => {
-  console.log(data);
-  SerialPort.list().then((ports) => {
-    event.reply("returnPorts", ports);  
-  })  
+ipcMain.on('requestPorts', (event) => {
+  requestPort();
+  var portFound:boolean = false;
+  function requestPort()
+  {
+    SerialPort.list().then((ports) => {
+      ports.forEach((port) => {
+        const portConnection = new SerialPort({
+          path: port.path,
+          baudRate: 9600,
+        }).setEncoding('utf8');
+        portConnection.on('readable', function () {
+          let portData = portConnection.read();
+          let portDataArr = portData.split(' | ');
+          if(portDataArr[0] === 'ToWheelUI') {
+            console.log('Found matching port: ' + port.path);
+            portFound = true;
+            event.reply("returnPort", port);  
+          }
+          else {
+            console.log(`The port ${port.path} is not the target one. Searching for other ports...`);
+          }
+          portConnection.close();
+        })
+      });
+    })
+
+    setTimeout(() => {
+      if(!portFound) {
+        console.warn('No ports found, trying again after 1 second...');
+        requestPort();
+      }
+    }, 1000)
+  }
 });
 
 ipcMain.on('systemShutdown', () => {
