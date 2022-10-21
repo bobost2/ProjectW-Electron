@@ -2,8 +2,7 @@ import React, { FC } from 'react';
 import styles from '../AddUserComponent/AddUserComponent.module.scss';
 
 interface AddUserComponentProps {
-  username: string;
-  avatar: string;
+  user: User;
 }
 
 //Username limit - 14
@@ -11,7 +10,7 @@ interface AddUserComponentProps {
 const AddUserComponent: FC<AddUserComponentProps> = (props) => {
   
   function DisplayAvatar(){
-    if(props.avatar !== null){
+    if(props.user.IconId !== 0){
       return (
         <div className={styles.profileBox_plusSign}>#</div>
       );    
@@ -29,7 +28,7 @@ const AddUserComponent: FC<AddUserComponentProps> = (props) => {
       <div className={styles.profileBox}>
         {DisplayAvatar()}
       </div>
-      <div className={styles.TextUser}>{props.username}</div>
+      <div className={styles.TextUser}>{props.user.Username}</div>
     </div>
   );
 }

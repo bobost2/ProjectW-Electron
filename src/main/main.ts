@@ -76,6 +76,7 @@ function createDatabase() {
   CREATE TABLE "User" (
     "ID"	INTEGER NOT NULL UNIQUE,
     "Username"	TEXT NOT NULL,
+    "PIN"	INTEGER,
     "Height"	INTEGER NOT NULL,
     "Weight"	INTEGER NOT NULL,
     "Age"	INTEGER NOT NULL,
@@ -96,8 +97,31 @@ function createDatabase() {
   `);
 }
 
-ipcMain.on('TestDatabase', (event) => {
-  
+ipcMain.on('createUser', (event, data) => {
+  var db = new sqlite3.Database('ProjectWData.db');
+  let dataToSave:User = data;
+  db.exec(`INSERT INTO "main"."User" ("Username", "PIN", "Height", "Weight", "Age", "IconId") 
+  VALUES ('${dataToSave.Username}', '${dataToSave.PIN}', '${dataToSave.Height}', '${dataToSave.Weight}', '${dataToSave.Age}', '${dataToSave.IconId}');`);
+})
+
+ipcMain.on('requestUsers', (event) => {
+  var db = new sqlite3.Database('ProjectWData.db');
+  var userData:User[] = [];
+  db.all(`
+  SELECT ID, Username, IconId FROM User`, (err:any, rows:any) => {
+    rows.forEach((row:any) => {
+      userData.push({
+        ID: row.ID,
+        Username: row.Username,
+        IconId: row.IconId
+      })
+    })
+    event.reply("returnUsers", userData)
+  });
+})
+
+ipcMain.on('returnUserInfo', (event, data) => {
+
 })
 
 ipcMain.on('requestPorts', (event) => {

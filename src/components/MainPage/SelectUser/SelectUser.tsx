@@ -1,5 +1,6 @@
 import AddUserComponent from 'components/User/AddUserComponent/AddUserComponent';
 import ExUserComponent from 'components/User/ExUserComponent/ExUserComponent';
+import { ipcRenderer } from 'electron';
 import React, { FC, useEffect, useState } from 'react';
 import styles from './SelectUser.module.scss';
 
@@ -8,18 +9,16 @@ interface SelectUserProps {
 }
 
 const SelectUser: FC<SelectUserProps> = (props) => {
-  const [tempUsers, setTempUsers] = useState([{}]);
+  const [loadedUsers, setLoadedUsers] = useState<User[]>([]);
   
   useEffect(() => {
-    var tempArray = [];
-    tempArray.push({"avatar": null, "username": "user1"});
-    tempArray.push({"avatar": "#AVATAR#", "username": "user2"});
-    tempArray.push({"avatar": null, "username": "user3"});
-    tempArray.push({"avatar": null, "username": "user4"});
-    tempArray.push({"avatar": "#AVATAR#", "username": "user5"});
-    tempArray.push({"avatar": null, "username": "user6"});
-
-    setTempUsers(tempArray);
+    var usersDB:User[] = [];
+    ipcRenderer.send("requestUsers");
+    ipcRenderer.on("returnUsers", (event, data) => {
+      usersDB = data;
+      setLoadedUsers(usersDB);
+    });
+    //There will be a console error for memory leak, but I think it's probably fake.
   },[])
   
   return(
@@ -27,9 +26,9 @@ const SelectUser: FC<SelectUserProps> = (props) => {
       <span onClick={props.AddUser}>
         <AddUserComponent/>
       </span>
-      { tempUsers.map((user:any, i) => (
+      { loadedUsers.map((userInList:User, i) => (
         <span key={i}>
-          <ExUserComponent avatar={user.avatar} username={user.username}/>
+          <ExUserComponent user={userInList}/>
         </span>
       ))}
     </div>

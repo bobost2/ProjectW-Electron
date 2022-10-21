@@ -1,4 +1,5 @@
 import { Button, IconButton, InputAdornment, OutlinedInput, TextField } from '@mui/material';
+import { ipcRenderer } from 'electron';
 import React, { FC, useState } from 'react';
 import styles from './AddUser.module.scss';
 
@@ -11,6 +12,9 @@ const AddUser: FC<AddUserProps> = (props) => {
   const [height, setHeight] = useState(170);
   const [weight, setWeight] = useState(80);
   const [age, setAge] = useState(20);
+  const [username, setUsername] = useState("");
+  const [usernameCriteria, setUsernameCriteria] = useState(false);
+
 
   
   const handleChangeHeight = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,13 +41,33 @@ const AddUser: FC<AddUserProps> = (props) => {
     }
   }
 
+  const handleChangeUsername = (e:React.ChangeEvent<HTMLInputElement>) => {
+    setUsername(e.target.value);
+    if(e.target.value.length > 0 && e.target.value.length <= 14) setUsernameCriteria(true);
+    else setUsernameCriteria(false);
+  }
+
+  const usernameCheck = (event:any) => {
+    var regex = new RegExp("^[a-zA-Z0-9]+$");
+    var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+    if (!regex.test(key)) {
+       event.preventDefault();
+       return false;
+    }
+  }
+
+  function addUserToDatabase(){
+    let user:User = {Username: username, Age: age, Weight: weight, Height: height, IconId: 0, PIN: 0}
+    ipcRenderer.send("createUser", user);
+  }
+
 
   return (
     <div className={styles.AddUser}>
       
       <div style={{display: 'flex'}}>
         <div className={styles.HelperText}>Please enter a username:</div>
-        <TextField style={{width: '27rem'}} id="outlined-basic" label="Username" variant="outlined" />
+        <TextField onKeyPress={usernameCheck} style={{width: '27rem'}} id="outlined-basic" label="Username" variant="outlined" onChange={handleChangeUsername} value={username}/>
       </div>
       
       <div style={{display: 'flex'}}>
@@ -104,7 +128,7 @@ const AddUser: FC<AddUserProps> = (props) => {
 
       <div className={styles.ButtonSection}>
         <Button variant="contained" style={{fontSize: '1.3rem'}} color="secondary" onClick={props.ReturnToSelection}>Return to user selection</Button>
-        <Button variant="contained" style={{fontSize: '1.3rem'}} color="success">Create user</Button>
+        <Button variant="contained" style={{fontSize: '1.3rem'}} color="success" disabled={!usernameCriteria} onClick={addUserToDatabase}>Create user</Button>
       </div>
 
     </div>
