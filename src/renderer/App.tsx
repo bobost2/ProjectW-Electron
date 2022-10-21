@@ -1,4 +1,5 @@
 import { createTheme, ThemeProvider } from '@mui/material';
+import MainMenuUnlocked from 'components/MainMenuUnlocked/MainMenuUnlocked';
 import MainPage from 'components/MainPage/MainPage';
 import SystemBar from 'components/SystemBar/SystemBar';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
@@ -19,6 +20,7 @@ export default function App() {
         <Router>
           <Routes>
             <Route path="/" element={<MainPage />} />
+            <Route path="/MainMenuUnlocked" element={<MainMenuUnlocked />} />
           </Routes>
         </Router>
       </div>

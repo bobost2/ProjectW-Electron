@@ -1,4 +1,5 @@
 import React, { FC } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from '../AddUserComponent/AddUserComponent.module.scss';
 
 interface AddUserComponentProps {
@@ -9,6 +10,8 @@ interface AddUserComponentProps {
 
 const AddUserComponent: FC<AddUserComponentProps> = (props) => {
   
+  const navigate = useNavigate();
+
   function DisplayAvatar(){
     if(props.user.IconId !== 0){
       return (
@@ -23,8 +26,13 @@ const AddUserComponent: FC<AddUserComponentProps> = (props) => {
     }
   }
   
+  function GoToTheNextPage(){
+    localStorage.setItem("userId", (props.user.ID ?? "0").toString());
+    navigate('MainMenuUnlocked');
+  }
+  
   return (
-    <div className={styles.AddUserComponent}>
+    <div className={styles.AddUserComponent} onClick={GoToTheNextPage}>
       <div className={styles.profileBox}>
         {DisplayAvatar()}
       </div>

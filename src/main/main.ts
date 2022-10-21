@@ -102,7 +102,12 @@ ipcMain.on('createUser', (event, data) => {
   var db = new sqlite3.Database('ProjectWData.db');
   let dataToSave:User = data;
   db.exec(`INSERT INTO "main"."User" ("Username", "PIN", "Height", "Weight", "Age", "IconId") 
-  VALUES ('${dataToSave.Username}', '${dataToSave.PIN}', '${dataToSave.Height}', '${dataToSave.Weight}', '${dataToSave.Age}', '${dataToSave.IconId}');`);
+  VALUES ('${dataToSave.Username}', '${dataToSave.PIN}', '${dataToSave.Height}', '${dataToSave.Weight}', '${dataToSave.Age}', '${dataToSave.IconId}');`, () => {
+    db.all(`SELECT ID FROM "main"."User" WHERE Username='${dataToSave.Username}';`, (err:any, rows:User[]) => {
+      let userId = rows[rows.length - 1].ID;
+      event.reply("returnCreatedUserID", userId);
+    })
+  });
 })
 
 ipcMain.on('requestUsers', (event) => {

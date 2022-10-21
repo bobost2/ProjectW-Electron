@@ -1,6 +1,7 @@
 import { Button, IconButton, InputAdornment, OutlinedInput, TextField } from '@mui/material';
 import { ipcRenderer } from 'electron';
 import React, { FC, useState } from 'react';
+import { Navigate, useNavigate } from 'react-router-dom';
 import styles from './AddUser.module.scss';
 
 interface AddUserProps {
@@ -15,7 +16,7 @@ const AddUser: FC<AddUserProps> = (props) => {
   const [username, setUsername] = useState("");
   const [usernameCriteria, setUsernameCriteria] = useState(false);
 
-
+  const navigate = useNavigate();
   
   const handleChangeHeight = (event: React.ChangeEvent<HTMLInputElement>) => {
     var targetNumber = parseInt(event.target.value);
@@ -59,7 +60,11 @@ const AddUser: FC<AddUserProps> = (props) => {
   function addUserToDatabase(){
     let user:User = {Username: username, Age: age, Weight: weight, Height: height, IconId: 0, PIN: 0}
     ipcRenderer.send("createUser", user);
-  }
+    ipcRenderer.on("returnCreatedUserID", (event, data:number) => {
+      localStorage.setItem("userId", data.toString());
+      navigate('MainMenuUnlocked');
+    });
+  } 
 
 
   return (

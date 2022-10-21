@@ -3,7 +3,6 @@ import styles from './MainPage.module.scss';
 import SelectUser from './SelectUser/SelectUser';
 import AddUserComponent from './AddUser/AddUser';
 import { FC, useState } from 'react';
-import SerialPortComponent from 'components/SerialPortComponent/SerialPortComponent';
 
 interface MainPageProps {}
 
