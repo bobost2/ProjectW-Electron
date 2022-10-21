@@ -12,10 +12,12 @@ import path from 'path';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
-import MenuBuilder from './menu';
+//import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import { SerialPort } from 'serialport'
 import { exec } from 'child_process';
+
+var sqlite3 = require('sqlite3');
 
 
 export default class AppUpdater {
@@ -60,6 +62,43 @@ const installExtensions = async () => {
     .catch(console.log);
 };
 
+function InitializeDatabase() {
+  new sqlite3.Database('./ProjectWData.db', sqlite3.OPEN_READWRITE, (err: any) => {
+    if (err && err.code == "SQLITE_CANTOPEN") {
+        createDatabase();
+    } 
+  });
+}
+
+function createDatabase() {
+  var db = new sqlite3.Database('ProjectWData.db');
+  db.exec(`
+  CREATE TABLE "User" (
+    "ID"	INTEGER NOT NULL UNIQUE,
+    "Username"	TEXT NOT NULL,
+    "Height"	INTEGER NOT NULL,
+    "Weight"	INTEGER NOT NULL,
+    "Age"	INTEGER NOT NULL,
+    "IconId"	INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY("ID" AUTOINCREMENT)
+  );
+
+  CREATE TABLE "Activity" (
+    "ID"	INTEGER NOT NULL UNIQUE,
+    "UserID"	INTEGER NOT NULL,
+    "CaloriesBurned"	REAL NOT NULL,
+    "KilometersCycled"	REAL NOT NULL,
+    "MaxSpeed"	REAL NOT NULL,
+    "AvgSpeed"	REAL NOT NULL,
+    FOREIGN KEY("UserID") REFERENCES "User"("ID"),
+    PRIMARY KEY("ID" AUTOINCREMENT)
+  );
+  `);
+}
+
+ipcMain.on('TestDatabase', (event) => {
+  
+})
 
 ipcMain.on('requestPorts', (event) => {
   requestPort();
@@ -117,8 +156,9 @@ const createWindow = async () => {
 
   mainWindow = new BrowserWindow({
     show: false,
+    //fullscreen: true, (Enable this on prod version)
     width: 1765, //1280
-    height: 800,
+    height: 840, //800
     icon: getAssetPath('icon.png'),
     webPreferences: {
       nodeIntegration: true,
@@ -129,6 +169,8 @@ const createWindow = async () => {
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 
   mainWindow.on('ready-to-show', () => {
+    mainWindow?.setMenu(null);
+    InitializeDatabase();
     if (!mainWindow) {
       throw new Error('"mainWindow" is not defined');
     }
@@ -143,20 +185,18 @@ const createWindow = async () => {
     mainWindow = null;
   });
 
-  const menuBuilder = new MenuBuilder(mainWindow);
-  menuBuilder.buildMenu();
+  //const menuBuilder = new MenuBuilder(mainWindow);
+  //menuBuilder.buildMenu();
 
   // Open urls in the user's browser
   mainWindow.webContents.setWindowOpenHandler((edata) => {
     shell.openExternal(edata.url);
     return { action: 'deny' };
-  });
+  });  
 
   // Remove this if your app does not use auto updates
   // eslint-disable-next-line
   new AppUpdater();
-
-  //lockPort();
 };
 
 /**
@@ -177,7 +217,7 @@ app
     createWindow();
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
-      // dock icon is clicked and there are no other windows open.
+      // dock icon is clicked and there are no other windows open.      
       if (mainWindow === null) createWindow();
     });
   })
