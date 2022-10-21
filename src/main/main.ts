@@ -88,6 +88,7 @@ function createDatabase() {
     "ID"	INTEGER NOT NULL UNIQUE,
     "UserID"	INTEGER NOT NULL,
     "CaloriesBurned"	REAL NOT NULL,
+    "MinutesTrained"	INTEGER NOT NULL,
     "KilometersCycled"	REAL NOT NULL,
     "MaxSpeed"	REAL NOT NULL,
     "AvgSpeed"	REAL NOT NULL,
