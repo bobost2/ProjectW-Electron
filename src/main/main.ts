@@ -95,6 +95,16 @@ function createDatabase() {
     FOREIGN KEY("UserID") REFERENCES "User"("ID"),
     PRIMARY KEY("ID" AUTOINCREMENT)
   );
+  CREATE TABLE "Goal" (
+    "UserId"	INTEGER NOT NULL UNIQUE,
+    "KMGoal"	INTEGER DEFAULT 0,
+    "TimeGoal"	INTEGER DEFAULT 0,
+    "CaloriesGoal"	INTEGER DEFAULT 0,
+    "KMLimit"	NUMERIC,
+    "TimeLimitMinutes"	INTEGER,
+    "CaloriesLimit"	NUMERIC,
+    FOREIGN KEY("UserId") REFERENCES "User"("ID")
+  );
   `);
 }
 
@@ -105,7 +115,9 @@ ipcMain.on('createUser', (event, data) => {
   VALUES ('${dataToSave.Username}', '${dataToSave.PIN}', '${dataToSave.Height}', '${dataToSave.Weight}', '${dataToSave.Age}', '${dataToSave.IconId}');`, () => {
     db.all(`SELECT ID FROM "main"."User" WHERE Username='${dataToSave.Username}';`, (err:any, rows:User[]) => {
       let userId = rows[rows.length - 1].ID;
-      event.reply("returnCreatedUserID", userId);
+      db.exec(`INSERT INTO "main"."Goal" ("UserId") VALUES (${userId});`, () => {
+        event.reply("returnCreatedUserID", userId);
+      })
     })
   });
 })
