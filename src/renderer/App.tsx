@@ -1,4 +1,5 @@
 import { createTheme, ThemeProvider } from '@mui/material';
+import GoalPreferencies from 'components/GoalPreferencies/GoalPreferencies';
 import MainMenuUnlocked from 'components/MainMenuUnlocked/MainMenuUnlocked';
 import MainPage from 'components/MainPage/MainPage';
 import SettingsMenu from 'components/SettingsMenu/SettingsMenu';
@@ -23,6 +24,7 @@ export default function App() {
             <Route path="/" element={<MainPage />} />
             <Route path="/MainMenuUnlocked" element={<MainMenuUnlocked />} />
             <Route path="/SettingsMenu" element={<SettingsMenu />} />
+            <Route path="/GoalPreferencies" element={<GoalPreferencies />} />
           </Routes>
         </Router>
       </div>

@@ -156,6 +156,19 @@ ipcMain.on('returnUserInfo', (event, data) => {
   })
 })
 
+
+ipcMain.on('returnUserGoals', (event, data) => {
+  var db = new sqlite3.Database('ProjectWData.db');
+  var userGoals:Goals;
+  db.all(`SELECT * FROM Goal WHERE UserId=${data}`, (err:any, rows:any) => {
+    rows.forEach((row:any) => {
+      console.log(row);
+      userGoals = row;
+      event.reply("returnGoals", userGoals)
+    })
+  })
+})
+
 ipcMain.on('requestPorts', (event) => {
   requestPort();
   var portFound:boolean = false;
