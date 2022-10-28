@@ -127,7 +127,21 @@ ipcMain.on('requestUsers', (event) => {
 })
 
 ipcMain.on('returnUserInfo', (event, data) => {
-
+  var db = new sqlite3.Database('ProjectWData.db');
+  var targetUser:User;
+  db.all(`SELECT * FROM User WHERE ID=${data}`, (err:any, rows:any) => {
+    rows.forEach((row:any) => {
+      targetUser = {
+        ID: row.ID,
+        Username: row.Username,
+        Height: row.Height,
+        Weight: row.Weight,
+        Age: row.Age,
+        IconId: row.IconId
+      }
+      event.reply("returnUser", targetUser)
+    })
+  })
 })
 
 ipcMain.on('requestPorts', (event) => {

@@ -14,7 +14,7 @@ const SelectUser: FC<SelectUserProps> = (props) => {
   useEffect(() => {
     var usersDB:User[] = [];
     ipcRenderer.send("requestUsers");
-    ipcRenderer.on("returnUsers", (event, data) => {
+    ipcRenderer.once("returnUsers", (event, data) => {
       usersDB = data;
       setLoadedUsers(usersDB);
     });
