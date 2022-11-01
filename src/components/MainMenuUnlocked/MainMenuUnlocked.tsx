@@ -35,7 +35,7 @@ const MainMenuUnlocked: FC<MainMenuUnlockedProps> = () => {
     <div className={styles.MainMenuUnlocked}>
       <WindowComponent title={`Logged in as ${user?.Username}`} height={"33rem"} padding={"2rem"}>
         <GlassButtonComponent text='Begin training' iconPreset={0} eventClick={() => {}} />
-        <GlassButtonComponent text='Previous sessions' iconPreset={3} eventClick={() => {}} />
+        <GlassButtonComponent text='Previous sessions' iconPreset={3} eventClick={() => navigate('/PreviousSessions')} />
         <GlassButtonComponent text='Preferences' iconPreset={2} eventClick={() => navigate('/SettingsMenu')} />
         <GlassButtonComponent text='Log out' iconPreset={1} eventClick={logOut} />
       </WindowComponent>

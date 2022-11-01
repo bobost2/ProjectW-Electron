@@ -83,15 +83,14 @@ function createDatabase() {
     "IconId"	INTEGER NOT NULL DEFAULT 0,
     PRIMARY KEY("ID" AUTOINCREMENT)
   );
-
   CREATE TABLE "Activity" (
     "ID"	INTEGER NOT NULL UNIQUE,
     "UserID"	INTEGER NOT NULL,
     "CaloriesBurned"	REAL NOT NULL,
     "MinutesTrained"	INTEGER NOT NULL,
     "KilometersCycled"	REAL NOT NULL,
-    "MaxSpeed"	REAL NOT NULL,
     "AvgSpeed"	REAL NOT NULL,
+    "Date"	INTEGER NOT NULL,
     FOREIGN KEY("UserID") REFERENCES "User"("ID"),
     PRIMARY KEY("ID" AUTOINCREMENT)
   );
@@ -162,12 +161,13 @@ ipcMain.on('returnUserGoals', (event, data) => {
   var userGoals:Goals;
   db.all(`SELECT * FROM Goal WHERE UserId=${data}`, (err:any, rows:any) => {
     rows.forEach((row:any) => {
-      //console.log(row);
       userGoals = row;
       event.reply("returnGoals", userGoals)
     })
   }) 
 })
+
+
 
 ipcMain.on('updateUserStats', (event, data) => {
   var db = new sqlite3.Database('ProjectWData.db');
@@ -177,6 +177,18 @@ ipcMain.on('updateUserStats', (event, data) => {
     SET (Username, Height, Weight, Age) = ('${user.Username}', ${user.Height}, ${user.Weight}, ${user.Age})
     WHERE "ID" = ${user.ID};
   `);
+})
+
+ipcMain.on('requestUserActivity', (event, data) => {
+  var db = new sqlite3.Database('ProjectWData.db');
+  var userActivity:Activity[] = [];
+  db.all(`
+  SELECT * FROM Activity WHERE UserId=${data}`, (err:any, rows:any) => {
+    rows.forEach((row:Activity) => {
+      userActivity.push(row);
+    })
+    event.reply("returnAllActivities", userActivity)
+  });
 })
 
 ipcMain.on('setUserGoals', (event, data) => {
