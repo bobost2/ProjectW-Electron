@@ -7,10 +7,12 @@ import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 import AvTimerIcon from '@mui/icons-material/AvTimer';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import SaveIcon from '@mui/icons-material/Save';
 
 interface GlassButtonComponentProps {
   iconPreset: number;
   text: string;
+  v2?: boolean;
   eventClick: () => void;
 }
 
@@ -46,11 +48,15 @@ const GlassButtonComponent: FC<GlassButtonComponentProps> = (props) => {
         return (
           <div className={styles.profileBox_plusSign}><ManageAccountsIcon style={{marginLeft: '8px', marginTop: '8px', textShadow: "0 0 5px white", color: "white", fontSize: "3rem"}}/></div>
         )
+      case 7:
+        return (
+          <div className={styles.profileBox_plusSign}><SaveIcon style={{marginLeft: '8px', marginTop: '8px', textShadow: "0 0 5px white", color: "white", fontSize: "3rem"}}/></div>
+        )
     }
   }
   
   return (
-    <div className={styles.AddUserComponent} onClick={props.eventClick}>
+    <div className={!props.v2 ? styles.AddUserComponent : styles.ButtonV2} onClick={props.eventClick}>
       <div className={styles.iconBox}>
         {DisplayAvatar()}
       </div>

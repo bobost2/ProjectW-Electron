@@ -13,7 +13,7 @@ const SettingsMenu: FC<SettingsMenuProps> = () => {
   return (
     <div className={styles.SettingsMenu}>
       <WindowComponent title={`Preferences`} height={"33rem"} padding={"2rem"}>
-          <GlassButtonComponent text='Account' iconPreset={6} eventClick={() => {}} />
+          <GlassButtonComponent text='Account' iconPreset={6} eventClick={() => navigate("/ModifyAccountPage")} />
           <GlassButtonComponent text='Set goals' iconPreset={5} eventClick={() => navigate("/GoalPreferencies")} />
           <GlassButtonComponent text='Return' iconPreset={4} eventClick={() => navigate("/MainMenuUnlocked")} />
         </WindowComponent>

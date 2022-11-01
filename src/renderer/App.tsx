@@ -2,6 +2,7 @@ import { createTheme, ThemeProvider } from '@mui/material';
 import GoalPreferencies from 'components/GoalPreferencies/GoalPreferencies';
 import MainMenuUnlocked from 'components/MainMenuUnlocked/MainMenuUnlocked';
 import MainPage from 'components/MainPage/MainPage';
+import ModifyAccountPage from 'components/ModifyAccountPage/ModifyAccountPage';
 import SettingsMenu from 'components/SettingsMenu/SettingsMenu';
 import SystemBar from 'components/SystemBar/SystemBar';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
@@ -25,6 +26,7 @@ export default function App() {
             <Route path="/MainMenuUnlocked" element={<MainMenuUnlocked />} />
             <Route path="/SettingsMenu" element={<SettingsMenu />} />
             <Route path="/GoalPreferencies" element={<GoalPreferencies />} />
+            <Route path="/ModifyAccountPage" element={<ModifyAccountPage />} />
           </Routes>
         </Router>
       </div>

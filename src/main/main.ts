@@ -162,11 +162,40 @@ ipcMain.on('returnUserGoals', (event, data) => {
   var userGoals:Goals;
   db.all(`SELECT * FROM Goal WHERE UserId=${data}`, (err:any, rows:any) => {
     rows.forEach((row:any) => {
-      console.log(row);
+      //console.log(row);
       userGoals = row;
       event.reply("returnGoals", userGoals)
     })
-  })
+  }) 
+})
+
+ipcMain.on('updateUserStats', (event, data) => {
+  var db = new sqlite3.Database('ProjectWData.db');
+  var user:User = data;
+  db.exec(`
+    UPDATE User
+    SET (Username, Height, Weight, Age) = ('${user.Username}', ${user.Height}, ${user.Weight}, ${user.Age})
+    WHERE "ID" = ${user.ID};
+  `);
+})
+
+ipcMain.on('setUserGoals', (event, data) => {
+  var db = new sqlite3.Database('ProjectWData.db');
+  var userGoals:Goals = data;
+  db.exec(`
+    UPDATE Goal
+    SET (KMGoal,KMLimit,TimeGoal,TimeLimitMinutes,CaloriesGoal,CaloriesLimit) = (${+userGoals.KMGoal},${userGoals.KMLimit},${+userGoals.TimeGoal},${userGoals.TimeLimitMinutes},${+userGoals.CaloriesGoal},${userGoals.CaloriesLimit})
+    WHERE "UserId" = ${userGoals.UserId};
+  `);
+})
+
+ipcMain.on('deleteAccount', (event, data) => {
+  var db = new sqlite3.Database('ProjectWData.db');
+  db.exec(`
+    DELETE FROM Activity WHERE "UserID" = ${data};
+    DELETE FROM Goal WHERE "UserId" = ${data};
+    DELETE FROM User WHERE "ID" = ${data};
+  `);
 })
 
 ipcMain.on('requestPorts', (event) => {
@@ -198,7 +227,7 @@ ipcMain.on('requestPorts', (event) => {
 
     setTimeout(() => {
       if(!portFound) {
-        console.warn('No ports found, trying again after 1 second...');
+        //console.warn('No ports found, trying again after 1 second...'); maybe return it?
         requestPort();
       }
     }, 1000)

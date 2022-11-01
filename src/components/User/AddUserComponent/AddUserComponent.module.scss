@@ -20,6 +20,26 @@
     background-color: #36363633;
 }
 
+.ButtonV2 {
+    background-color: #00000033;
+    box-shadow: black 0px 0px 4px 1px;
+    display: inline-flex;
+    margin-bottom: -1rem;
+    width: 17rem;
+    height: 4rem;
+    justify-content: space-between;
+}
+
+.ButtonV2:hover {
+    cursor: pointer;
+    background-color: #24242433;
+}
+
+.ButtonV2:active {
+    cursor: pointer;
+    background-color: #36363633;
+}
+
 .profileBox{
     width: 4rem;
     height: 4rem;
