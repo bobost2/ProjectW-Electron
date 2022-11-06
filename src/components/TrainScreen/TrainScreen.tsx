@@ -5,20 +5,23 @@ import { useNavigate } from 'react-router-dom';
 import styles from './TrainScreen.module.scss';
 import RuleIcon from '@mui/icons-material/Rule';
 import SingleGoal from 'components/SingleGoal/SingleGoal';
+import { ipcRenderer } from 'electron';
 
 interface TrainScreenProps {}
 
 const TrainScreen: FC<TrainScreenProps> = () => {
 
-  const [statKM, setStatKM] = useState("141");
-  const [statTime, setStatTime] = useState("1:05:42");
-  const [statCal, setStatCal] = useState("456");
+  const [statKM, setStatKM] = useState(0);
+  const [statTime, setStatTime] = useState(0);
+  const [statCal, setStatCal] = useState(0);
   const [statAvgKM, setStatAvgKM] = useState("16");
 
-  const [goalKMEnabled, setGoalKMEnabled] = useState(true);
-  const [goalTimeEnabled, setGoalTimeEnabled] = useState(true);
-  const [goalCalEnabled, setGoalCalEnabled] = useState(true);
-
+  const [goalKMEnabled, setGoalKMEnabled] = useState(false);
+  const [KMGoal, setKMGoal] = React.useState(15);
+  const [goalTimeEnabled, setGoalTimeEnabled] = useState(false);
+  const [timeGoal, setTimeGoal] = React.useState(30);
+  const [goalCalEnabled, setGoalCalEnabled] = useState(false);
+  const [calGoal, setCalGoal] = React.useState(300);
 
   const navigate = useNavigate();
   let userId = localStorage.getItem('userId');
@@ -27,9 +30,21 @@ const TrainScreen: FC<TrainScreenProps> = () => {
     navigate('/PreviousSessions');
   }
 
+  function importGoals(){
+    ipcRenderer.send("returnUserGoals", userId);
+    ipcRenderer.once("returnGoals", (event, data:Goals) => {
+      setGoalKMEnabled(data.KMGoal);
+      if(data.KMGoal) setKMGoal(data.KMLimit ?? 0);
+      setGoalTimeEnabled(data.TimeGoal);
+      if(data.TimeGoal) setTimeGoal(data.TimeLimitMinutes ?? 0);
+      setGoalCalEnabled(data.CaloriesGoal);
+      if(data.CaloriesGoal) setCalGoal(data.CaloriesLimit ?? 0);
+    })
+  }
+
   useEffect(() => {
     if(userId === null) navigate('/');
-    //getUser();
+    importGoals();
   }, [])
   
   return (
@@ -73,9 +88,9 @@ const TrainScreen: FC<TrainScreenProps> = () => {
               </div>
               :
               <>
-                {goalKMEnabled ? <SingleGoal goalTitle={"Kilometers cycled:"} goalMax={80} goalPercentage={70} goalType={"KM"}/> : null}
-                {goalTimeEnabled ? <SingleGoal goalTitle={"Time cycled in minutes:"} goalMax={90} goalPercentage={78} goalType={"Minutes"}/> : null}
-                {goalCalEnabled ? <SingleGoal goalTitle={"Calories burned:"} goalMax={800} goalPercentage={632} goalType={"Calories"}/> : null}
+                {goalKMEnabled ? <SingleGoal goalTitle={"Kilometers cycled:"} goalMax={KMGoal} goalPercentage={statKM} goalType={"KM"}/> : null}
+                {goalTimeEnabled ? <SingleGoal goalTitle={"Time cycled in minutes:"} goalMax={timeGoal} goalPercentage={statTime} goalType={"Minutes"}/> : null}
+                {goalCalEnabled ? <SingleGoal goalTitle={"Calories burned:"} goalMax={calGoal} goalPercentage={statCal} goalType={"Calories"}/> : null}
               </>
             }
           </div>
