@@ -18,6 +18,7 @@ import { SerialPort } from 'serialport'
 import { exec } from 'child_process';
 
 var sqlite3 = require('sqlite3');
+var foundPort:string = ""; 
 
 
 export default class AppUpdater {
@@ -210,6 +211,29 @@ ipcMain.on('deleteAccount', (event, data) => {
   `);
 })
 
+var runTelemetry:boolean = false;
+
+ipcMain.on('StartTelemetryFetching', (event, data) => {
+  runTelemetry = true;
+  if (foundPort === "") return;
+  const port = new SerialPort({
+    path: foundPort,
+    baudRate: 9600,
+  }).setEncoding('utf8');
+  port.on('data', function (data) {
+    if(runTelemetry){
+      event.reply('returnTelemetry', data);
+    } else {
+      port.close();
+      return;
+    }
+  })
+})
+
+ipcMain.on('StopTelemetryFetching', (event, data) => {
+  runTelemetry = false;
+})
+
 ipcMain.on('requestPorts', (event) => {
   requestPort();
   var portFound:boolean = false;
@@ -227,6 +251,7 @@ ipcMain.on('requestPorts', (event) => {
           if(portDataArr[0] === 'ToWheelUI') {
             console.log('Found matching port: ' + port.path);
             portFound = true;
+            foundPort = port.path;
             event.reply("returnPort", port);  
           }
           else {

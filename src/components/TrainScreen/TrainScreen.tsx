@@ -14,7 +14,7 @@ const TrainScreen: FC<TrainScreenProps> = () => {
   const [statKM, setStatKM] = useState(0);
   const [statTime, setStatTime] = useState(0);
   const [statCal, setStatCal] = useState(0);
-  const [statAvgKM, setStatAvgKM] = useState("16");
+  const [statAvgKM, setStatAvgKM] = useState(0);
 
   const [goalKMEnabled, setGoalKMEnabled] = useState(false);
   const [KMGoal, setKMGoal] = React.useState(15);
@@ -24,9 +24,13 @@ const TrainScreen: FC<TrainScreenProps> = () => {
   const [calGoal, setCalGoal] = React.useState(300);
 
   const navigate = useNavigate();
+  var notLongerInWindow:boolean = false;
   let userId = localStorage.getItem('userId');
 
   function finishSession(){
+    notLongerInWindow = true;
+    ipcRenderer.removeAllListeners("StartTelemetryFetching");
+    ipcRenderer.send("StopTelemetryFetching");
     navigate('/PreviousSessions');
   }
 
@@ -42,9 +46,17 @@ const TrainScreen: FC<TrainScreenProps> = () => {
     })
   }
 
+  function startFetchingDataFromSerial(){
+    ipcRenderer.send("StartTelemetryFetching");
+    ipcRenderer.addListener("returnTelemetry", (event, data) => {
+      console.warn(data);
+    })
+  }
+
   useEffect(() => {
     if(userId === null) navigate('/');
     importGoals();
+    startFetchingDataFromSerial();
   }, [])
   
   return (
