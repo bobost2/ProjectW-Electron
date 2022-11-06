@@ -14,7 +14,7 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 //import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import { SerialPort } from 'serialport'
+import { ReadlineParser, SerialPort } from 'serialport'
 import { exec } from 'child_process';
 
 var sqlite3 = require('sqlite3');
@@ -220,9 +220,12 @@ ipcMain.on('StartTelemetryFetching', (event, data) => {
     path: foundPort,
     baudRate: 9600,
   }).setEncoding('utf8');
-  port.on('data', function (data) {
+  const parser = new ReadlineParser()
+  port.pipe(parser);
+  parser.on('data', function (data) {
     if(runTelemetry){
-      event.reply('returnTelemetry', data);
+      console.log(data);
+      event.reply('returnTelemetry', data.toString());
     } else {
       port.close();
       return;
@@ -247,8 +250,8 @@ ipcMain.on('requestPorts', (event) => {
         }).setEncoding('utf8');
         portConnection.on('readable', function () {
           let portData = portConnection.read();
-          let portDataArr = portData.split(' | ');
-          if(portDataArr[0] === 'ToWheelUI') {
+          let portDataArr = portData.split('|');
+          if(portDataArr[0] === 'PRJW') {
             console.log('Found matching port: ' + port.path);
             portFound = true;
             foundPort = port.path;

@@ -29,7 +29,7 @@ const TrainScreen: FC<TrainScreenProps> = () => {
 
   function finishSession(){
     notLongerInWindow = true;
-    ipcRenderer.removeAllListeners("StartTelemetryFetching");
+    ipcRenderer.removeAllListeners("returnTelemetry");
     ipcRenderer.send("StopTelemetryFetching");
     navigate('/PreviousSessions');
   }
