@@ -9,12 +9,24 @@ import { ipcRenderer } from 'electron';
 
 interface TrainScreenProps {}
 
+const getMITScale = (KMHAvg:number) => {
+  if(KMHAvg < 10) return 3.5;
+  else if(KMHAvg < 15.10) return 4.0;
+  else if(KMHAvg < 19.15) return 6.8;
+  else if(KMHAvg < 22.36) return 8.0;
+  else if(KMHAvg < 25.58) return 10.0;
+  else if(KMHAvg < 32.18) return 12.0;
+  else return 15.8;
+}
+
 const TrainScreen: FC<TrainScreenProps> = () => {
 
   const [statKM, setStatKM] = useState(0);
-  const [statTime, setStatTime] = useState(0);
+  const [statTimeMin, setStatTimeMin] = useState(0);
+  const [statTime, setStatTime] = useState("00:00:00");
   const [statCal, setStatCal] = useState(0);
   const [statAvgKM, setStatAvgKM] = useState(0);
+  const [statKMH, setStatKMH] = useState(0);
 
   const [goalKMEnabled, setGoalKMEnabled] = useState(false);
   const [KMGoal, setKMGoal] = React.useState(15);
@@ -24,11 +36,19 @@ const TrainScreen: FC<TrainScreenProps> = () => {
   const [calGoal, setCalGoal] = React.useState(300);
 
   const navigate = useNavigate();
-  var notLongerInWindow:boolean = false;
-  let userId = localStorage.getItem('userId');
+  var userWeight:number = 100;
+  let userId:number = +(localStorage.getItem('userId') ?? 0);
 
   function finishSession(){
-    notLongerInWindow = true;
+    let userActivity:Activity = {
+      UserID: userId,
+      AvgSpeed: statAvgKM,
+      CaloriesBurned: statCal,
+      Date: Date.now() ,
+      KilometersCycled: statKM,
+      MinutesTrained: statTimeMin
+    }
+    ipcRenderer.send("addUserActivity", userActivity);
     ipcRenderer.removeAllListeners("returnTelemetry");
     ipcRenderer.send("StopTelemetryFetching");
     navigate('/PreviousSessions');
@@ -46,16 +66,46 @@ const TrainScreen: FC<TrainScreenProps> = () => {
     })
   }
 
+  function importUserStats() {
+    ipcRenderer.send("returnUserInfo", userId);
+    ipcRenderer.once("returnUser", (event, data:User) => {
+      userWeight = data.Weight ?? 110;
+    })
+  }
+
   function startFetchingDataFromSerial(){
     ipcRenderer.send("StartTelemetryFetching");
     ipcRenderer.addListener("returnTelemetry", (event, data) => {
-      console.warn(data);
+      //Data to chop "PRJW|KMH: 0|M: 0|KMA: 0.00|T: 0"
+      let elements:string[] = data.split("|");
+      //console.log("KMH:  0".split("KMH:")[1].trim());
+      setStatKMH(parseFloat(elements[1].split("KMH:")[1].trim()));
+      setStatKM(parseFloat(elements[2].split("M:")[1].trim())/1000);
+      var tmpSpeedAverage = parseFloat(elements[3].split("KMA:")[1].trim())
+      setStatAvgKM(tmpSpeedAverage);
+
+      
+      let timeInSeconds = parseInt(elements[4].split("T:")[1].trim());
+      setStatTimeMin(timeInSeconds/60);
+      
+      let timeDate = new Date(0);
+      timeDate.setSeconds(timeInSeconds);
+      var timeString = timeDate.toISOString().substring(11, 19);
+      setStatTime(timeString);
+
+      let convertedTimeToHours = timeInSeconds/(60*60);
+      let calcOverallCal = userWeight * getMITScale(tmpSpeedAverage) * convertedTimeToHours;
+      //console.log(`${userWeight} * ${getMITScale(tmpSpeedAverage)}(${tmpSpeedAverage}) * ${convertedTimeToHours} = ${calcOverallCal}`)
+      calcOverallCal = parseFloat(calcOverallCal.toFixed(2));
+      setStatCal(calcOverallCal);
+      //console.warn(data);
     })
   }
 
   useEffect(() => {
     if(userId === null) navigate('/');
     importGoals();
+    importUserStats();
     startFetchingDataFromSerial();
   }, [])
   
@@ -73,19 +123,23 @@ const TrainScreen: FC<TrainScreenProps> = () => {
                 <div className={styles.MiniStatBox_text2}>{statKM}</div>
               </div>
               <div className={styles.MiniStatBox}>
-                <div className={styles.MiniStatBox_text}>Time passed:</div>
-                <div className={styles.MiniStatBox_text2}>{statTime}</div>
-              </div>
-            </div>
-            <div className={styles.StatDivider}>
-              <div className={styles.MiniStatBox}>
-                <div className={styles.MiniStatBox_text}>Calories:</div>
-                <div className={styles.MiniStatBox_text2}>{statCal}</div>
+                <div className={styles.MiniStatBox_text}>KM/H:</div>
+                <div className={styles.MiniStatBox_text2}>{statKMH}</div>
               </div>
               <div className={styles.MiniStatBox}>
                 <div className={styles.MiniStatBox_text}>Avg KM/H:</div>
                 <div className={styles.MiniStatBox_text2}>{statAvgKM}</div>
               </div>
+            </div>
+            <div className={styles.StatDivider}>
+              <div className={styles.MiniStatBox} style={{width: '17rem'}}>
+                <div className={styles.MiniStatBox_text}>Time passed:</div>
+                <div className={styles.MiniStatBox_text2}>{statTime}</div>
+              </div>
+              <div className={styles.MiniStatBox} style={{width: '17rem'}}>
+                <div className={styles.MiniStatBox_text}>Calories:</div>
+                <div className={styles.MiniStatBox_text2}>{statCal}</div>
+              </div> 
             </div>
           </div>
           <div className={styles.BoxGoals}>
@@ -101,7 +155,7 @@ const TrainScreen: FC<TrainScreenProps> = () => {
               :
               <>
                 {goalKMEnabled ? <SingleGoal goalTitle={"Kilometers cycled:"} goalMax={KMGoal} goalPercentage={statKM} goalType={"KM"}/> : null}
-                {goalTimeEnabled ? <SingleGoal goalTitle={"Time cycled in minutes:"} goalMax={timeGoal} goalPercentage={statTime} goalType={"Minutes"}/> : null}
+                {goalTimeEnabled ? <SingleGoal goalTitle={"Time cycled in minutes:"} goalMax={timeGoal} goalPercentage={statTimeMin} goalType={"Minutes"}/> : null}
                 {goalCalEnabled ? <SingleGoal goalTitle={"Calories burned:"} goalMax={calGoal} goalPercentage={statCal} goalType={"Calories"}/> : null}
               </>
             }

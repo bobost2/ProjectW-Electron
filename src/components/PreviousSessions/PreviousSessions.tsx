@@ -39,9 +39,10 @@ const PreviousSessions: FC<PreviousSessionsProps> = () => {
 
     ipcRenderer.send("requestUserActivity", userId);
     ipcRenderer.once("returnAllActivities", (event, data:Activity[]) => {
-      data.forEach(row => {
+      
+      data.slice().reverse().forEach((row,i) => {
 
-        var dateA = new Date(row.Date * 1000);
+        var dateA = new Date(row.Date);
         var hours = dateA.getHours();
         var minutes = "0" + dateA.getMinutes();
         var formattedTime = hours + ':' + minutes.substr(-2);
@@ -51,7 +52,7 @@ const PreviousSessions: FC<PreviousSessionsProps> = () => {
         var durMF = durM < 10 ? '0' + durM : durM;
 
         allActivities.push({
-          id: row.ID ?? 0,
+          id: i,
           date: dateA,
           avgKM: row.AvgSpeed,
           duration: durH + ":" + durMF,
@@ -73,7 +74,7 @@ const PreviousSessions: FC<PreviousSessionsProps> = () => {
     <div className={styles.PreviousSessions}>
       <WindowComponent title={`Previous sessions`} height={"33rem"} padding={"2rem"}>
         <div style={{ height: 330, width: '100%', marginBottom: '20px'}}>
-          <DataGrid rows={gridRows} columns={columns} style={{ boxShadow: '0px 0px 4px black', background: '#ffffff2b'}} />
+          <DataGrid rows={gridRows} columns={columns} style={{ boxShadow: '0px 0px 4px black', background: '#ffffff2b'}}/>
         </div>
         <GlassButtonComponent v2 text='Return' iconPreset={4} eventClick={() => navigate("/MainMenuUnlocked")} />
       </WindowComponent>

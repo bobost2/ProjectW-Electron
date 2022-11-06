@@ -192,6 +192,16 @@ ipcMain.on('requestUserActivity', (event, data) => {
   });
 })
 
+ipcMain.on('addUserActivity', (event, data) => {
+  var db = new sqlite3.Database('ProjectWData.db');
+  var userActivity:Activity = data;
+  db.exec(`
+    INSERT INTO "main"."Activity"
+    ("UserID", "CaloriesBurned", "MinutesTrained", "KilometersCycled", "AvgSpeed", "Date")
+    VALUES (${userActivity.UserID}, ${userActivity.CaloriesBurned}, ${Math.round(userActivity.MinutesTrained)}, ${userActivity.KilometersCycled}, ${userActivity.AvgSpeed}, ${userActivity.Date});
+  `);
+});
+
 ipcMain.on('setUserGoals', (event, data) => {
   var db = new sqlite3.Database('ProjectWData.db');
   var userGoals:Goals = data;
@@ -224,7 +234,7 @@ ipcMain.on('StartTelemetryFetching', (event, data) => {
   port.pipe(parser);
   parser.on('data', function (data) {
     if(runTelemetry){
-      console.log(data);
+      //console.log(data);
       event.reply('returnTelemetry', data.toString());
     } else {
       port.close();
@@ -252,20 +262,19 @@ ipcMain.on('requestPorts', (event) => {
         portConnection.pipe(parser);
         parser.once('data', function (data:any) {
           let portData = data;
-          console.log(portData);
+          //console.log(portData);
           let portDataArr = portData.split('|');
           if(portDataArr[0] === 'PRJW') {
             console.log('Found matching port: ' + port.path);
             portFound = true;
             foundPort = port.path;
             event.reply("returnPort", port);  
-            return;
+            portConnection.close();
           }
           else {
             console.log(`The port ${port.path} is not the target one. Searching for other ports...`);
-          }
-          portConnection.unpipe(parser);
-          portConnection.close();
+            portConnection.close();
+          }        
         })
       });
     })
