@@ -248,18 +248,23 @@ ipcMain.on('requestPorts', (event) => {
           path: port.path,
           baudRate: 9600,
         }).setEncoding('utf8');
-        portConnection.on('readable', function () {
-          let portData = portConnection.read();
+        const parser = new ReadlineParser()
+        portConnection.pipe(parser);
+        parser.once('data', function (data:any) {
+          let portData = data;
+          console.log(portData);
           let portDataArr = portData.split('|');
           if(portDataArr[0] === 'PRJW') {
             console.log('Found matching port: ' + port.path);
             portFound = true;
             foundPort = port.path;
             event.reply("returnPort", port);  
+            return;
           }
           else {
             console.log(`The port ${port.path} is not the target one. Searching for other ports...`);
           }
+          portConnection.unpipe(parser);
           portConnection.close();
         })
       });
